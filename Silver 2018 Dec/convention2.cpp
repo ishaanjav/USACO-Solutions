@@ -23,9 +23,7 @@ using namespace std;
 #define FOUND(u, val) u.find(val) != u.end()
 #define max_self(a, b) a = max(a, b);
 #define min_self(a, b) a = min(a, b);
-bool de = 1;
-// bool de = 0;
-#define deb  ////cout << (de ? "ASDFASDF\n" : "")
+#define deb cout << "ASDFASDF\n"
 #define read(ar) \
     for (auto& x : ar) cin >> x;
 #define each(ar) for (auto i : ar)
@@ -37,114 +35,53 @@ typedef vector<int> vi;
 typedef vector<vector<int> > vvi;
 typedef vector<ll> vl;
 typedef vector<bool> vb;
-#include <algorithm>
-#include <set>
+//#include <algorithm>
+//#include <set>
 //#include <map>
-#include <unordered_map>
-#include <unordered_set>
+//#include <unordered_set>
+//#include <unordered_map>
 //#include <cmath>
-#include <cstring>
+//#include <cstring>
 //#include <sstream>
 //#include <stack>
+//#include <queue>
+
+#include <algorithm>
 #include <queue>
-unordered_map<int, int> cowLoc;
-
-struct Cow {
-    int rank;
-    ll come;
-    ll left;
-
-    void toString() {
-        //cout << rank << " | " << come << "-" << left << endl;
-    }
-    int loc() {
-        return cowLoc[rank];
-    }
-};
-
-bool comp(Cow a, Cow b) {
-    if (a.come != b.come) return a.come < b.come;
-    return a.rank < b.rank;
+typedef pair<ll, pll> cow;
+int n;
+bool comp(cow a, cow b) {
+    if (a.se.fi == b.se.fi) return a.fi < b.fi;
+    return a.se.fi < b.se.fi;
 }
-bool comp2(Cow a, Cow b) {
-    return a.rank > b.rank;
-}
-
 int main() {
     ifstream cin("convention2.in");
     ofstream fout("convention2.out");
 
-    int n;
     cin >> n;
-    Cow ar[n];
+    vector<pair<ll, pll> > cows;
     for (int i = 0; i < n; i++) {
-        ar[i].rank = i;
-        cin >> ar[i].come >> ar[i].left;
-        ar[i].left += ar[i].come;
+        ll a, b;
+        cin >> a >> b;
+        cows.pb(mp(i, mp(a, b)));
     }
-    priority_queue<Cow, vector<Cow>, function<bool(Cow, Cow)> > pq(comp2);
+    sort(all(cows), comp);
+    priority_queue<pair<ll, pll>, vector<pair<ll, pll> >, greater<pair<ll, pll> > > pq;
 
-    sort(ar, ar + n, comp);
-    int counter = 0;
-    for (Cow c : ar) {
-        cowLoc[c.rank] = counter++;
-        c.toString();
-    }
-    ll turn[n];
-    SET(turn, 0);
-
-    pq.push(ar[0]);
-
-    bool finished[n], inside[n];
-    SET(finished, 0);
-    SET(inside, 0);
-
-    int last = 0;
-    int debu = 0;
-    ll lastCow = -1;
-    int j = 1;
-    int beenTo = 0;
-    while (last != n - 1 || pq.size() == 0) {
-        Cow cow = pq.top();
-        pq.pop();
-        // deb;
-        //cout << "At " << cow.rank << endl;
-        beenTo++;
-
-        if (lastCow == -1) {
-            turn[cow.loc()] = 0;
-            lastCow = cow.left;
-        } else {
-            turn[cow.loc()] = lastCow;
-            lastCow += cow.left - cow.come;
-        }
-        if (beenTo == n) break;
-        // if (++debu > 12) break;
-        for (; j < n; j++) {
-            if (ar[j].come > cow.left) break;
-            //cout << "Adding ";
-            ar[j].toString();
-            pq.push(ar[j]);
-        }
-        if (j != n && pq.size() == 0) {
-            lastCow = -1;
-            // for (int j = last; j < n; j++) {
-            //cout << "ASDFdas" << last;
-            pq.push(ar[j]);
-            // break;
-            // }
+    int i = 0;
+    ll maxWait = 0;
+    while (i != n) {
+        pq.push(cows[i]);
+        ll time = cows[i++].se.fi;
+        while (!pq.empty()) {
+            cow c = pq.top();
+            pq.pop();
+            max_self(maxWait, (ll)max(0ll, time - c.se.fi));
+            if (time < c.se.fi) time = c.se.fi;
+            time += c.se.se;  // finish time of this cow
+            for (; i < n && cows[i].se.fi <= time; i++) pq.push(cows[i]);
         }
     }
-
-    ll ans = 0;
-    cout << "\nWaits:\n";
-    for (int i = 0; i < n; i++) {
-        cout << turn[i] - ar[i].come << " ";
-        max_self(ans, turn[i] - ar[i].come);
-    }
-    fout << ans << endl;
-
-    // fout << ans << endl;
-
+    fout << maxWait << endl;
     return 0;
 }

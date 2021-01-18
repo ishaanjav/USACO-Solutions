@@ -23,9 +23,7 @@ using namespace std;
 #define FOUND(u, val) u.find(val) != u.end()
 #define max_self(a, b) a = max(a, b);
 #define min_self(a, b) a = min(a, b);
-bool de = 1;
-// bool de = 0;
-#define deb cout << (de ? "ASDFASDF\n" : "")
+#define deb cout << "ASDFASDF\n"
 #define read(ar) \
     for (auto& x : ar) cin >> x;
 #define each(ar) for (auto i : ar)
@@ -47,72 +45,72 @@ typedef vector<bool> vb;
 //#include <sstream>
 //#include <stack>
 #include <queue>
-
-vector<string> grid;
-int rows, cols = 10;
-int k;
-bool inBounds(int i, int j) { return i >= 0 && i < rows && j < cols && j >= 0; }
-vector<pii> trace;
-
-int xs[] = {1, -1, 0, 0};
-int ys[] = {0, 0, 1, -1};
-bool vis[101][10];
-void dfs(int i, int j) {
-    if (vis[i][j]) return;
-    vis[i][j] = 1;
-    trace.pb(mp(i, j));
-    for (int d = 0; d < 4; d++) {
-        int x = xs[d] + i, y = ys[d] + j;
-        if (inBounds(x, y) && grid[x][y] == grid[i][j]) dfs(x, y);
+bool visited[101][10];
+int n, k;
+vector<vector<char> > grid;
+ofstream fout("mooyomooyo.out");
+void printGrid() {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < 10; j++) fout << grid[i][j];
+        fout << endl;
     }
 }
-
-bool moveDown() {
-    bool changed = false;
-    for (int c = 0; c < 10; c++) {
-        int lastZero = -1;
-        for (int r = rows - 1; r >= 0; r--) {
-            if (lastZero == -1 && grid[r][c] == '0') lastZero = r;
-            if (grid[r][c] != '0') {
-                if (lastZero == -1) continue;
-                grid[lastZero][c] = grid[r][c];
-                grid[r][c] = '0';
-                r = lastZero;
-                lastZero = -1;
-                changed = 1;
-            }
+void fallDown() {
+    for (int col = 0; col < 10; col++) {
+        vector<char> nums;
+        for (int r = n - 1; r >= 0; r--)
+            if (grid[r][col] != '0') nums.pb(grid[r][col]);
+        int c = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            if (c++ < nums.size())
+                grid[i][col] = nums[c - 1];
+            else
+                grid[i][col] = '0';
         }
     }
-    return changed;
 }
-
+bool inBounds(int i, int j, int rows, int cols) { return i >= 0 && i < rows && j < cols && j >= 0; }
 int main() {
     ifstream cin("mooyomooyo.in");
-    ofstream fout("mooyomooyo.out");
-    cin >> rows >> k;
 
-    grid.resize(rows);
-    for (int i = 0; i < rows; i++) cin >> grid[i];
-
-    bool changes = true;
-
-    while (changes) {
-        changes = false;
-        SET(vis, 0);
-        for (int i = 0; i < rows; i++) {
+    cin >> n >> k;
+    grid.resize(n, vector<char>(10));
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < 10; j++) cin >> grid[i][j];
+    }
+    bool changes = false;
+    int dx[] = {1, -1, 0, 0};
+    int dy[] = {0, 0, -1, 1};
+    do {
+        changes = 0;
+        for (int i = 0; i < n; i++) {
             for (int j = 0; j < 10; j++) {
-                if (grid[i][j] == '0' || vis[i][j]) continue;
-                trace.clear();
-                dfs(i, j);
-                changes |= (trace.size() >= k);
-                if (trace.size() >= k)
-                    for (pii p : trace)
-                        grid[p.fi][p.se] = '0';
+                if (grid[i][j] == '0' || visited[i][j]) continue;
+                queue<pii> q;
+                vector<pii> track;
+                q.push(mp(i, j));
+                while (!q.empty()) {
+                    pii top = q.front();
+                    q.pop();
+                    if (visited[top.fi][top.se]) continue;
+                    visited[top.fi][top.se] = 1;
+                    track.pb(top);
+                    for (int d = 0; d < 4; d++) {
+                        int newR = dx[d] + top.fi, newC = dy[d] + top.se;
+                        if (inBounds(newR, newC, n, 10) && !visited[newR][newC] && grid[newR][newC] == grid[i][j]) {
+                            q.push(mp(newR, newC));
+                        }
+                    }
+                }
+                if (track.size() >= k) {
+                    each(track) grid[i.fi][i.se] = '0';
+                    changes = 1;
+                }
             }
         }
-        changes |= moveDown();
-    }
-
-    for (string s : grid) fout << s + "\n";
+        SET(visited, false);
+        fallDown();
+    } while (changes);
+    printGrid();
     return 0;
 }

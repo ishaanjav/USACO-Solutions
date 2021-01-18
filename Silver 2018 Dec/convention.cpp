@@ -23,9 +23,7 @@ using namespace std;
 #define FOUND(u, val) u.find(val) != u.end()
 #define max_self(a, b) a = max(a, b);
 #define min_self(a, b) a = min(a, b);
-bool de = 1;
-// bool de = 0;
-#define deb cout << (de ? "ASDFASDF\n" : "")
+#define deb cout << "ASDFASDF\n"
 #define read(ar) \
     for (auto& x : ar) cin >> x;
 #define each(ar) for (auto i : ar)
@@ -48,49 +46,38 @@ typedef vector<bool> vb;
 //#include <stack>
 //#include <queue>
 
-// #include <algorithm>
 #include <algorithm>
 
 int n, m, c;
-bool canDo(ll dif, ll ar[]) {
-    int busCount = 0;
+vl cows;
+bool canDo(ll mid) {
+    int buses = 0;
     for (int i = 0; i < n;) {
-        int cap = 0;
-        ll first = ar[i];
-        bool changed = false;
-        while (i < n && cap < c && first + dif >= ar[i]) {
-            i++;
-            cap++;
-            changed = true;
-        }
-        if (!changed) i++;
-        busCount++;
+        buses++;
+        int j = i;
+        while (j < n && j - i < c && cows[j] <= cows[i] + mid) j++;
+        i = j;
     }
-    return busCount <= m;
+    return buses <= m;
 }
 int main() {
     ifstream cin("convention.in");
     ofstream fout("convention.out");
 
     cin >> n >> m >> c;
-    ll ar[n];
-    read(ar);
-    sort(ar, ar + n);
+    cows.resize(n);
+    for (int i = 0; i < n; i++) cin >> cows[i];
+    sort(all(cows));
 
-    ll lo = 1, hi = 1e10;
-    sort(ar, ar + n);
-
-    ll ans = ar[n - 1] - ar[0];
+    ll lo = 0, hi = cows[n - 1] - cows[0];
+    ll ans = 0;
     while (lo <= hi) {
         ll mid = (lo + hi) / 2;
-        if (canDo(mid, ar)) {
-            hi = mid - 1;
-            ans = mid;
-        } else
+        if (canDo(mid))
+            hi = mid - 1, ans = mid;
+        else
             lo = mid + 1;
     }
-
-    fout << ans << "\n";
-
+    fout << ans << endl;
     return 0;
 }
