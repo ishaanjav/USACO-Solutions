@@ -1,3 +1,9 @@
+/*
+ * Created by ishaanjav
+ * github.com/ishaanjav
+ * USACO Solutions: https://github.com/ishaanjav/USACO-Solutions
+ */
+
 #include <iostream>
 #include <fstream>
 using namespace std;

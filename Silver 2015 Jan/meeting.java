@@ -1,3 +1,9 @@
+/*
+ * Created by ishaanjav
+ * github.com/ishaanjav
+ * USACO Solutions: https://github.com/ishaanjav/USACO-Solutions
+ */
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
