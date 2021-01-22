@@ -33,16 +33,9 @@ using namespace std;
 typedef vector<int> vi;
 typedef vector<vector<int> > vvi;
 typedef vector<ll> vl;
-typedef vector<bool> vb;
-//#include <algorithm>
-//#include <set>
-//#include <map>
 #include <unordered_map>
 #include <unordered_set>
-//#include <cmath>
 #include <cstring>
-//#include <sstream>
-//#include <stack>
 #include <queue>
 
 int id[101][101];
@@ -81,51 +74,30 @@ int main() {
         for (int j = 1; j <= n; j++) {
             if (id[i][j] != 0) continue;
             c++;
-
             q.push(mp(i, j));
-            //            cout << "---\n";
             while (!q.empty()) {
                 pii top = q.front();
                 q.pop();
                 if (id[top.fi][top.se] != 0) continue;
                 id[top.fi][top.se] = c;
-                //                cout <<  "  at " << top.fi << " " << top.se <<endl;
                 for (int d = 0; d < 4; d++) {
                     int x = top.fi + xs[d], y = top.se + ys[d];
                     if (!inBounds(x, y, n) || FOUND(roads, mp(mp(x, y), top)) || FOUND(roads, mp(top, mp(x, y))) || id[x][y] == c) continue;
-                    //                    cout << " going to " << x << "," << y << " from " << top.fi <<"," <<top.se<<endl;
                     q.push(mp(x, y));
                 }
             }
         }
     }
-    //    for(int i = 1; i <= n; i++){
-    //        for(int j = 1 ; j <= n; j++){
-    //            cout << id[i][j] << " ";
-    //
-    //        }
-    //        cout <<endl;
-    //    }
-    cout << endl;
     while (k--) {
         int r, c;
         cin >> r >> c;
-        //        cout << r << " " << c << " == " << id[r][c] << endl;
         freq[id[r][c]]++;
     }
     ll count = 0;
-    for (pii p : freq) {
-        //        cout << p.fi << " " << p.se <<endl;
-        for (pii s : freq) {
-            if (p == s) continue;
-            count += p.se * s.se;
-        }
-    }
+    for (pii p : freq)
+        for (pii s : freq)
+            if (p != s) count += p.se * s.se;
     count /= 2;
-    cout << count;
     fout << count;
-
-    //fout <<  << "\";
-
     return 0;
 }
