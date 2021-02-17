@@ -54,65 +54,48 @@ typedef vector<bool> vb;
 //#include <stack>
 //#include <queue>
 
-int n;
-vector<string> grid;
-bool visited[1001][1001];
-bool surrounding[1001][1001];
 int perim = 0;
-vector<pii> blobs;
+vector<vector<char> > grid;
+bool vis[1003][1003];
 int rows, cols;
-
+bool inBounds(int i, int j) {return i >= 0 && i < rows && j < cols && j >= 0;}
 int dx[] = {1, -1, 0, 0};
-int dy[] = {0, 0, 1, -1};
-
-int dfs(int i, int j) {
-    int counter = 1;
-    visited[i][j] = 1;
-    int f = 0;
-    for (int d = 0; d < 4; d++) {
+int dy[] = {0, 0, -1, 1};
+int dfs(int i, int j){
+    if(vis[i][j]) return 0;
+    vis[i][j] = 1;
+    int ans = 1;
+    for(int d = 0; d < 4; d++){
         int x = dx[d] + i, y = dy[d] + j;
-        if (!visited[x][y] && grid[x][y] == '#')
-            counter += dfs(x, y);
-        perim += grid[x][y] != '#';
+        if(grid[x][y] == '#') ans += dfs(x, y);
+        else perim ++;
     }
-    return counter;
+    return ans;
 }
-
 int main() {
     ifstream cin("perimeter.in");
     ofstream fout("perimeter.out");
-
-    cin >> n;
+    
+    int n; cin >> n;
+    grid.resize(n+2, vector<char>(n + 2));
     rows = cols = n + 2;
-
-    grid.resize(n + 2);
-
-    for (int i = 1; i <= n; i++) {
-        cin >> grid[i];
-        grid[i] = "." + grid[i] + ".";
+    for(int i = 0; i <= n + 1; i++)
+        grid[i][0] = grid[0][i] = grid[n+1][i] = grid[i][n+1] = '.';
+    for(int i = 1; i <= n; i++){
+        string s; cin >> s;
+        for(int j = 1; j <= n; j++)
+            grid[i][j] = s[j-1];
     }
-
-    for (int i = 1; i <= n; i++) {
-        for (int j = 1; j <= n; j++) {
-            if (visited[i][j] || grid[i][j] == '.') continue;
-            perim = 0;
-            SET(surrounding, false);
-            int area = dfs(i, j);
-            blobs.pb(mp(area, perim));
-        }
-    }
-
-    int area = 0;
-    perim = 0;
-    for (int i = 0; i < blobs.size(); i++) {
-        if (blobs[i].fi > area) {
-            area = blobs[i].fi;
-            perim = blobs[i].se;
-        } else if (blobs[i].fi == area && perim > blobs[i].se)
-            perim = blobs[i].se;
-    }
-
-    fout << area << " " << perim << endl;
-
+    
+    int p = 0, a = 0;
+    for(int i = 1; i <= n; i++)
+        for(int j = 1; j <= n; j++)
+            if(!vis[i][j] && grid[i][j] == '#'){
+                perim = 0;
+                max_self(a, dfs(i, j));
+                max_self(p, perim);
+            }
+    fout << a << " " << p << endl;
     return 0;
 }
+
