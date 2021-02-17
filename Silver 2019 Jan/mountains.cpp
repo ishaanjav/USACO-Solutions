@@ -29,62 +29,26 @@ using namespace std;
 #define FOUND(u, val) u.find(val) != u.end()
 #define max_self(a, b) a = max(a, b);
 #define min_self(a, b) a = min(a, b);
-bool de = 1;
-// bool de = 0;
-#define deb cout << (de ? "ASDFASDF\n" : "")
-#define read(ar) \
-    for (auto& x : ar) cin >> x;
-#define each(ar) for (auto i : ar)
-#define eachv(ar, i) for (auto i : ar)
-
-#include <string>
-#include <vector>
-typedef vector<int> vi;
-typedef vector<vector<int> > vvi;
-typedef vector<ll> vl;
-typedef vector<bool> vb;
-//#include <algorithm>
-//#include <set>
-//#include <map>
-#include <unordered_set>
-//#include <unordered_map>
-//#include <cmath>
-//#include <cstring>
-//#include <sstream>
-//#include <stack>
-//#include <queue>
 
 #include <algorithm>
 
 int main() {
     ifstream cin("mountains.in");
     ofstream fout("mountains.out");
-
-    int n;
-    cin >> n;
-    vector<pair<ll, ll> > mountains;
-
-    // <open, closing>
-    for (int i = 0; i < n; i++) {
-        ll a, b;
-        cin >> a >> b;
-        ll c = a - b;
-        b = a + b;
-        a = c;
-
-        mountains.pb(mp(a, b));
+    
+    int n; cin >> n;
+    pll ar[n];
+    for(int i = 0; i < n; i++){
+        ll a, b; cin >> a >> b;
+        ar[i] = mp(a - b, a + b);
     }
-
-    sort(all(mountains));
-
-    ll counter = 0;
-    ll farthest = -1;
-    for (int i = 0; i < n; i++) {
-        if (mountains[i].second > farthest) {
-            counter++;
-            farthest = mountains[i].se;
-        }
+    sort(ar, ar + n);
+    int ans = 0, i = 0;
+    while(i < n){
+        ans ++;
+        pll p = ar[i];
+        while(i < n && (p.fi == ar[i].fi || p.se >= ar[i].se)) i++;
     }
-    fout << counter << endl;
-    return 0;
+    fout << ans << endl;
 }
+
