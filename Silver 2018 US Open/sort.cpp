@@ -57,25 +57,16 @@ typedef vector<bool> vb;
 int main() {
     ifstream cin("sort.in");
     ofstream fout("sort.out");
-
-    int n;
-    cin >> n;
-    pll ar[n];
-    int c = 0;
-    each(ar) {
-        cin >> i.fi;
-        i.se = c++;
-    }
-    sort(ar, ar + n);
-    c = 0;
-    ll ans = 0;
-    each(ar) {
-        max_self(ans, (ll)abs(c - i.se));
-        c++;
-    }
-
+    
+    int n; cin >> n;
+    int ar[n]; read(ar);
+    int cp[n];
+    for(int i = 0; i < n; i++) cp[i] = ar[i];
+    sort(cp, cp + n);
+    unordered_map<int, int> rm;
+    for(int i = 0; i < n; i++) rm[cp[i]] = i;
+    int ans = 0;
+    for(int i = 0; i < n; i++) max_self(ans, i - rm[ar[i]]);
     fout << ans + 1 << endl;
-    //fout <<  << "\n";
-
     return 0;
 }
