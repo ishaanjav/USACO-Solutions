@@ -7,51 +7,26 @@
 #include <fstream>
 #include <iostream>
 using namespace std;
-
 #define ll long long
-#define pb push_back
-#define mp make_pair
-#define fi first
-#define se second
-#define all(v) v.begin(), v.end()
 
-#include <string>
-#include <vector>
-typedef vector<int> vi;
-//#include <algorithm>
-//#include <map>
-//#include <set>
-//#include <unordered_map>
-//#include <unordered_set>
-//#include <cmath>
-//#include <cstring>
-//#include <sstream>
-//#include <stack>
-//#include <queue>
 
 int main() {
-    ifstream fin("cowjog.in");
+    ifstream cin("cowjog.in");
     ofstream fout("cowjog.out");
-
+    
     ll n, t;
-    fin >> n >> t;
-    ll ar[n];
-    for (int i = 0; i < n; i++) {
-        ll a, b;
-        fin >> a >> b;
-        ar[i] = a + b * t;
+    cin >> n >> t;
+    ll goingTo[n];
+    for(int i = 0; i < n; i++){
+        ll x, s; cin >> x >> s;
+        goingTo[i] = x + t * s;
     }
-    int counter = 0;
-    ll first = -1;
-    for (int i = n - 1; i >= 0; i--) {
-        if (first == -1 || first > ar[i]) {
-            first = ar[i];
-            counter++;
-        }
+    int ans = 0;
+    for(int i = n - 1; i >=0;){
+        ans++;
+        ll to = goingTo[i];
+        while(i >= 0 && goingTo[i] >= to) i--;
     }
-
-    fout << counter << "\n";
-    cout << counter << "\n";
-
+    fout << ans << endl;
     return 0;
 }
