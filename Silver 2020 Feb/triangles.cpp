@@ -10,54 +10,88 @@ using namespace std;
 
 #define ll long long
 #define pb push_back
-#define ins insert
 #define mp make_pair
 #define pii pair<int, int>
-#define pil pair<int, ll>
 #define pll pair<ll, ll>
-#define pib pair<int, bool>
-#define SET(a,c) memset(a,c,sizeof(a))
 #define MOD 1000000007
-#define Endl "\n"
-#define endl "\n"
 #define fi first
 #define se second
-#define rs resize
-#define len(a) (sizeof(a)/sizeof(a[0])
 #define all(v) v.begin(), v.end()
-#define rall(v) v.rbegin(), v.rend()
-#define FOUND(u, val) u.find(val) != u.end()
-#define max_self(a, b) a = max(a, b);
-#define min_self(a, b) a = min(a, b);
-#define deb cout << "ASDFASDF\n"
-#define read(ar) for (auto& x : ar) cin >> x;
-#define each(ar) for(auto i: ar)
-#define eachv(ar, i) for (auto i : ar)
-
-#include <string>
 #include <vector>
-typedef vector<int> vi;
-typedef vector<vector<int> > vvi;
-typedef vector<ll> vl;
-typedef vector<bool> vb;
-//#include <algorithm>
-//#include <set>
-//#include <map>
-//#include <unordered_set>
-//#include <unordered_map>
-//#include <cmath>
-//#include <cstring>
-//#include <sstream>
-//#include <stack>
-//#include <queue>
+#include <unordered_map>
+#include <algorithm>
 
+bool comp(pair<pii, int> a, pair<pii, int> b){
+    if(a.fi.se != b.fi.se) return a.fi.se < b.fi.se;
+    return a.fi.fi < b.fi.fi;
+}
 int main() {
     ifstream cin("triangles.in");
     ofstream fout("triangles.out");
     
-    int n;
-    cin >> n;
+    int n; cin >> n;
+    vector<pair<pll, int> > ar;
+    for(int i = 0; i < n; i++){
+        int a, b; cin >> a >> b;
+        ar.pb(mp(mp(a,b), i));
+    }
+    unordered_map<int, ll> ys, xs; // xs[id] = sum of all horizontal distances from point with id.
+    sort(all(ar));
 
-
+    for(int i = 0; i < n;){
+        int j = i;
+        vector<pii> points;
+        while(j < n && ar[i].fi.fi == ar[j].fi.fi){
+            points.pb(ar[j].fi);
+            j++;
+        }
+        ll sum = 0; // all points in points have the same x.
+        ll y = points[0].se; // the lowest y
+        for(int p = i+1; p < j; p++)
+            sum += points[p-i].se - y;
+        ys[ar[i].se] = sum;
+        // when we move up to the 2nd lowest point,
+        //  we get closer to n-1 of the points and farther from 1 point = closer to n - 2.
+        //   this is over a distance of points[p+1].y - points[p].y
+        int m = points.size();
+        for(int p = 1; p < m; p++){
+            int closerTo = m - p;
+            int fartherFrom = p;
+            int distance = points[p].se - points[p-1].se;
+            sum += distance * (fartherFrom - closerTo);
+            ys[ar[i+p].se] = sum;
+        }
+        i = j;
+    }
+    
+    sort(all(ar), comp);
+    for(int i = 0; i < n;){
+        int j = i;
+        vector<pii> points;
+        while(j < n && ar[i].fi.se == ar[j].fi.se){
+            points.pb(ar[j].fi);
+            j++;
+        }
+        ll sum = 0; // all points in points have the same y.
+        ll y = points[0].fi; // the lowest x
+        for(int p = i+1; p < j; p++)
+            sum += points[p-i].fi - y;
+        xs[ar[i].se] = sum;
+        int m = points.size();
+        for(int p = 1; p < m; p++){
+            int closerTo = m - p;
+            int fartherFrom = p;
+            int distance = points[p].fi - points[p-1].fi;
+            sum += distance * (fartherFrom - closerTo);
+            xs[ar[i+p].se] = sum;
+        }
+        i = j;
+    }
+    ll ans = 0;
+    for(int i =0 ; i < n; i++){
+        ans += ys[ar[i].se] * xs[ar[i].se];
+        ans %= MOD;
+    }
+    fout << ans << endl;
     return 0;
 }
