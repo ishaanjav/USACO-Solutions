@@ -45,40 +45,48 @@ typedef vector<bool> vb;
 //#include <set>
 //#include <map>
 //#include <unordered_set>
-//#include <unordered_map>
+#include <unordered_map>
 //#include <cmath>
-#include <cstring>
+//#include <cstring>
 //#include <sstream>
 //#include <stack>
 //#include <queue>
-
-int main() {
-    ifstream cin("snowboots.in");
-    ofstream fout("snowboots.out");
-
-    int n, b;
-    cin >> n >> b;
-    pii boots[b];
-    ll ar[n];
-    read(ar);
-    for (int t = 0; t < b; t++) {
-        cin >> boots[t].fi >> boots[t].se;
-        bool can = true;
-        for (int i = 0; i < n - 1;) {
-            int rightMost = i;
-            for (int k = min(n - 1, i + boots[t].se); k > i; k--) {
-                if (ar[k] <= boots[t].fi) {
-                    i = k;
-                    break;
-                }
-            }
-            if (rightMost == i) {
-                can = 0;
-                break;
-            }
+vi ar;
+int n, k;
+unordered_map<int, int> comp;
+const int nax = 401;
+bool done[nax][nax];
+int dp[nax][nax];
+int recurse(int p = 0, int changes = -1) {
+    if (p == n) return 0;
+    if (changes == k) return -1;
+    if (done[p][changes + 1]) return dp[p][changes + 1];
+    int value = -1;
+    int sum = 0;
+    int biggest = 0;
+    for (int i = p; i < n; i++) {
+        max_self(biggest, ar[i]);
+        sum += ar[i];
+        int res = recurse(i + 1, changes + 1);
+        if (res != -1) {
+            if (value == -1) value = (biggest * (i - p + 1) - sum) + res;
+            else min_self(value, (biggest * (i - p + 1) - sum) + res);
         }
-        fout << can << endl;
     }
+    done[p][changes + 1] = 1;
+    dp[p][changes + 1] = value;
+    return value;
+}
+int main() {
+    ifstream cin("snakes.in");
+    ofstream fout("snakes.out");
 
+    cin >> n >> k;
+    ar.rs(n);
+    read(ar);
+    int c = 1;
+    for (int i = 0; i < n; i++)
+        if (comp[ar[i]] == 0) comp[ar[i]] = c++;
+    fout << recurse() << endl;
     return 0;
 }

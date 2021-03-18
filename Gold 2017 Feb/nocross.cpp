@@ -4,8 +4,8 @@
  * USACO Solutions: https://github.com/ishaanjav/USACO-Solutions
  */
 
-#include <fstream>
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 #define ll long long
@@ -16,7 +16,7 @@ using namespace std;
 #define pil pair<int, ll>
 #define pll pair<ll, ll>
 #define pib pair<int, bool>
-#define SET(a, c) memset(a, c, sizeof(a))
+#define SET(a,c) memset(a,c,sizeof(a))
 #define MOD 1000000007
 #define Endl "\n"
 #define endl "\n"
@@ -30,9 +30,8 @@ using namespace std;
 #define max_self(a, b) a = max(a, b);
 #define min_self(a, b) a = min(a, b);
 #define deb cout << "ASDFASDF\n"
-#define read(ar) \
-    for (auto& x : ar) cin >> x;
-#define each(ar) for (auto i : ar)
+#define read(ar) for (auto& x : ar) cin >> x;
+#define each(ar) for(auto i: ar)
 #define eachv(ar, i) for (auto i : ar)
 
 #include <string>
@@ -47,38 +46,28 @@ typedef vector<bool> vb;
 //#include <unordered_set>
 //#include <unordered_map>
 //#include <cmath>
-#include <cstring>
+//#include <cstring>
 //#include <sstream>
 //#include <stack>
 //#include <queue>
-
+int n;
+vi a, b;
+bool done[1001][1001]; int dp[1001][1001];
+int recurse(int p = 0, int p2 = 0){
+    if(p == n || p2 == n){ return 0; }
+    if(done[p][p2]) return dp[p][p2];
+    int cnt = recurse(p + 1, p2);
+    for(int i = p2; i < n -1; i++)
+        if(abs(a[p] - b[i]) <= 4) max_self(cnt, 1 + recurse(p + 1, i + 1));
+    done[p][p2] = 1; 
+    return dp[p][p2] = cnt;
+}
 int main() {
-    ifstream cin("snowboots.in");
-    ofstream fout("snowboots.out");
+    ifstream cin("nocross.in");
+    ofstream fout("nocross.out");
 
-    int n, b;
-    cin >> n >> b;
-    pii boots[b];
-    ll ar[n];
-    read(ar);
-    for (int t = 0; t < b; t++) {
-        cin >> boots[t].fi >> boots[t].se;
-        bool can = true;
-        for (int i = 0; i < n - 1;) {
-            int rightMost = i;
-            for (int k = min(n - 1, i + boots[t].se); k > i; k--) {
-                if (ar[k] <= boots[t].fi) {
-                    i = k;
-                    break;
-                }
-            }
-            if (rightMost == i) {
-                can = 0;
-                break;
-            }
-        }
-        fout << can << endl;
-    }
-
+    cin >> n; a.rs(n); b.rs(n);
+    read(a); read(b);
+    fout << recurse() << endl;
     return 0;
 }

@@ -41,44 +41,49 @@ typedef vector<int> vi;
 typedef vector<vector<int> > vvi;
 typedef vector<ll> vl;
 typedef vector<bool> vb;
-//#include <algorithm>
+#include <algorithm>
 //#include <set>
 //#include <map>
 //#include <unordered_set>
 //#include <unordered_map>
 //#include <cmath>
-#include <cstring>
+//#include <cstring>
 //#include <sstream>
 //#include <stack>
 //#include <queue>
 
+// SOLUTION
+/* doesn't matter which one is entry/exit
+Keep track of whether something has been seen or not.
+If not seen --> Set that number to seen and add it to the vector v
+If you come across a number that has already been seen,
+  find its location in the vector v and how many cows came after it
+  all those cows intersect with it because their endpoint is on the opposite
+side of the current cow's segment so increase ans by how many cows come after in
+the vector erase the number from the vector
+*/
+bool seen[50001];
 int main() {
-    ifstream cin("snowboots.in");
-    ofstream fout("snowboots.out");
+    ifstream cin("circlecross.in");
+    ofstream fout("circlecross.out");
 
-    int n, b;
-    cin >> n >> b;
-    pii boots[b];
-    ll ar[n];
-    read(ar);
-    for (int t = 0; t < b; t++) {
-        cin >> boots[t].fi >> boots[t].se;
-        bool can = true;
-        for (int i = 0; i < n - 1;) {
-            int rightMost = i;
-            for (int k = min(n - 1, i + boots[t].se); k > i; k--) {
-                if (ar[k] <= boots[t].fi) {
-                    i = k;
-                    break;
-                }
-            }
-            if (rightMost == i) {
-                can = 0;
-                break;
-            }
+    int n;
+    cin >> n;
+    int ar[2 * n]; read(ar);
+    n *= 2;
+    vi v;
+    int ans = 0;
+    for(int i = 0; i < n; i++){
+        if(!seen[ar[i]]){
+            seen[ar[i]] = 1;
+            v.pb(ar[i]);
+        }else{
+            auto it = find(all(v), ar[i]);
+            int onTop = v.end() - it-1;
+            ans += onTop;
+            v.erase(it);
         }
-        fout << can << endl;
     }
-
+    fout << ans << endl;
     return 0;
 }

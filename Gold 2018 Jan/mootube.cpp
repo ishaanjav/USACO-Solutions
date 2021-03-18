@@ -1,7 +1,7 @@
 /*
  * Created by ishaanjav
  * github.com/ishaanjav
- * Codeforces Solutions: https://github.com/ishaanjav/Codeforces-Solutions
+ * USACO Solutions: https://github.com/ishaanjav/USACO-Solutions
  */
 
 #include <fstream>

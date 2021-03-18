@@ -1,11 +1,5 @@
-/*
- * Created by ishaanjav
- * github.com/ishaanjav
- * USACO Solutions: https://github.com/ishaanjav/USACO-Solutions
- */
-
-#include <fstream>
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 #define ll long long
@@ -16,7 +10,7 @@ using namespace std;
 #define pil pair<int, ll>
 #define pll pair<ll, ll>
 #define pib pair<int, bool>
-#define SET(a, c) memset(a, c, sizeof(a))
+#define SET(a,c) memset(a,c,sizeof(a))
 #define MOD 1000000007
 #define Endl "\n"
 #define endl "\n"
@@ -30,9 +24,8 @@ using namespace std;
 #define max_self(a, b) a = max(a, b);
 #define min_self(a, b) a = min(a, b);
 #define deb cout << "ASDFASDF\n"
-#define read(ar) \
-    for (auto& x : ar) cin >> x;
-#define each(ar) for (auto i : ar)
+#define read(ar) for (auto& x : ar) cin >> x;
+#define each(ar) for(auto i: ar)
 #define eachv(ar, i) for (auto i : ar)
 
 #include <string>
@@ -45,40 +38,40 @@ typedef vector<bool> vb;
 //#include <set>
 //#include <map>
 //#include <unordered_set>
-//#include <unordered_map>
+#include <unordered_map>
 //#include <cmath>
-#include <cstring>
+//#include <cstring>
 //#include <sstream>
 //#include <stack>
 //#include <queue>
 
+ll tree[800000], n;
+ll sum(int pos) {
+    ll s = 0; pos ++;
+    for (; pos >= 1; pos -= pos & -pos) s += tree[pos];
+    return s;
+}
+void update(int pos, int val) {
+    pos++;
+    for (; pos <= n * 5; pos += pos & -pos) {tree[pos] += val; }
+}
+ll query(int x, int y) { return sum(y) - sum(x - 1); }
+unordered_map<ll, ll> freq;
 int main() {
-    ifstream cin("snowboots.in");
-    ofstream fout("snowboots.out");
-
-    int n, b;
-    cin >> n >> b;
-    pii boots[b];
-    ll ar[n];
-    read(ar);
-    for (int t = 0; t < b; t++) {
-        cin >> boots[t].fi >> boots[t].se;
-        bool can = true;
-        for (int i = 0; i < n - 1;) {
-            int rightMost = i;
-            for (int k = min(n - 1, i + boots[t].se); k > i; k--) {
-                if (ar[k] <= boots[t].fi) {
-                    i = k;
-                    break;
-                }
-            }
-            if (rightMost == i) {
-                can = 0;
-                break;
-            }
-        }
-        fout << can << endl;
+    ifstream cin("haircut.in");
+    ofstream fout("haircut.out");
+    
+    cin >> n;
+    ll ar[n]; read(ar);
+    ll inversions = 0;
+    for(int i = 0; i< n; i++){
+        freq[ar[i]] += query(ar[i] + 1, n + 2);
+        update(ar[i], 1);
     }
 
+    ll pre[n + 2];
+    pre[0] = 0;
+    for(int i = 1; i <= n; i++) pre[i] = pre[i-1] + freq[i-1];
+    for(int i = 0; i < n; i++) fout << pre[i] << endl;
     return 0;
 }
