@@ -73,12 +73,6 @@ void update(int k, int x) {
         k += k & -k;
     }
 }
-void initialize(int ar[]) {
-    for (int i = 1; i <= n; i++) {
-        tree[i] += ar[i - 1];
-        if (i + (i & -i) <= n) tree[i + (i & -i)] += tree[i];
-    }
-}
 int main() {
     ifstream cin("sleepy.in");
     ofstream fout("sleepy.out");
